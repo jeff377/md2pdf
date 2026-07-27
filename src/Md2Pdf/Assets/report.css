@@ -1,0 +1,203 @@
+/* md2pdf 內建報告樣式：A4、中文字型、表格為主的文件。 */
+
+@page {
+    size: A4 portrait;
+    margin: 16mm 14mm 14mm 14mm;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    /* 中文字型依 macOS / Windows / Linux 順序 fallback，最後回到系統無襯線字型。 */
+    font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC",
+        "Heiti TC", "Source Han Sans TC", sans-serif;
+    font-size: 10.2pt;
+    line-height: 1.62;
+    color: #1c1f23;
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+h1.doc-title {
+    font-size: 20pt;
+    margin: 0 0 2mm;
+    letter-spacing: .5px;
+    color: #123a68;
+    border-bottom: 2.5pt solid #1f5fa8;
+    padding-bottom: 3mm;
+}
+
+.doc-meta {
+    background: #f5f7fa;
+    border-left: 3pt solid #1f5fa8;
+    border-radius: 2pt;
+    padding: 4mm 5mm;
+    margin: 4mm 0 7mm;
+    font-size: 9.2pt;
+    line-height: 1.75;
+}
+
+.doc-meta p {
+    margin: 0 0 1.5mm;
+}
+
+.doc-meta h2 {
+    font-size: 11.5pt;
+    margin: 2mm 0 1.5mm;
+    color: #123a68;
+    border: 0;
+    padding: 0;
+}
+
+h2 {
+    font-size: 13pt;
+    margin: 8mm 0 3mm;
+    color: #123a68;
+    border-bottom: 1pt solid #cdd7e2;
+    padding-bottom: 1.5mm;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 11pt;
+    margin: 5mm 0 2mm;
+    page-break-after: avoid;
+}
+
+p {
+    margin: 0 0 2.5mm;
+}
+
+ul,
+ol {
+    margin: 0 0 3mm;
+    padding-left: 6mm;
+}
+
+li {
+    margin-bottom: 1.5mm;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 3mm 0 5mm;
+    font-size: 9.2pt;
+    page-break-inside: auto;
+}
+
+/* 跨頁時重複表頭，並避免單一列被切成兩半。 */
+thead {
+    display: table-header-group;
+}
+
+tr {
+    page-break-inside: avoid;
+}
+
+th {
+    background: #1f5fa8;
+    color: #fff;
+    font-weight: 600;
+    text-align: left;
+    padding: 2mm 2.5mm;
+    border: .5pt solid #1f5fa8;
+    white-space: nowrap;
+}
+
+td {
+    padding: 1.8mm 2.5mm;
+    border: .5pt solid #d3dae2;
+    vertical-align: top;
+}
+
+tbody tr:nth-child(even) td {
+    background: #fafbfc;
+}
+
+th[style*="center"],
+td[style*="center"] {
+    text-align: center;
+}
+
+code {
+    font-family: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 8.6pt;
+    background: #eef1f5;
+    color: #333;
+    padding: .3mm 1mm;
+    border-radius: 2pt;
+}
+
+pre {
+    background: #f5f7fa;
+    border: .5pt solid #d3dae2;
+    border-radius: 2pt;
+    padding: 3mm;
+    font-size: 8.6pt;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    page-break-inside: avoid;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+}
+
+/* 列印時超連結底色與底線只會變成雜訊，保留文字即可。 */
+a {
+    color: #1c1f23;
+    text-decoration: none;
+}
+
+strong {
+    color: #0f2f52;
+}
+
+blockquote {
+    margin: 3mm 0;
+    padding: 2.5mm 4mm;
+    background: #fbfaf3;
+    border-left: 2.5pt solid #d9b44a;
+    font-size: 9.4pt;
+}
+
+blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+hr {
+    border: 0;
+    border-top: .5pt solid #d3dae2;
+    margin: 5mm 0;
+}
+
+/* 狀態標記（✅ 已完成 / 🔄 進行中 / ⬜ 未開始 …）不斷行並依語意上色。 */
+.status {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.status-done {
+    color: #1a7f45;
+}
+
+.status-active {
+    color: #b06a00;
+}
+
+.status-todo {
+    color: #6b7480;
+}
+
+.status-blocked {
+    color: #c0392b;
+}

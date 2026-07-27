@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Md2Pdf/Md2Pdf.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Md2Pdf.Tests/Md2Pdf.Tests.csproj" />
+  </Folder>
+</Solution>
