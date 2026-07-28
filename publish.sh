@@ -4,7 +4,7 @@
 #
 #   ./publish.sh                              # 預設三個 RID
 #   ./publish.sh osx-arm64                    # 只發佈指定 RID（可給多個）
-#   ./publish.sh --framework-dependent        # 改發佈需 .NET 執行階段的精簡版
+#   ./publish.sh --self-contained             # 改發佈自含 .NET 執行階段的獨立版
 #
 # 產物落在 publish/<rid>/md2pdf（Windows 為 md2pdf.exe）。
 #
@@ -16,7 +16,7 @@ PROJECT="src/Md2Pdf/Md2Pdf.csproj"
 OUTPUT_ROOT="publish"
 DEFAULT_RIDS=(osx-arm64 win-x64 linux-x64)
 
-self_contained=true
+self_contained=false
 rids=()
 
 for arg in "$@"; do
@@ -48,11 +48,11 @@ fi
 if [ "$self_contained" = true ]; then
     # 自含執行階段並裁剪：目標機不需安裝 .NET，代價是產物約 12 MB。
     mode_args=(--self-contained true -p:PublishTrimmed=true -p:EnableCompressionInSingleFile=true)
-    mode_label="self-contained（不需 .NET 執行階段）"
+    mode_label="self-contained（不需 .NET 執行階段，約 12 MB）"
 else
-    # 精簡版：產物僅數百 KB，但目標機須裝有 .NET 10 執行階段。
+    # 預設不含 .NET 組件：產物僅數百 KB，但目標機須裝有 .NET 10 執行階段。
     mode_args=(--self-contained false)
-    mode_label="framework-dependent（需 .NET 10 執行階段）"
+    mode_label="framework-dependent（需 .NET 10 執行階段，約 650 KB）"
 fi
 
 echo "發佈模式：$mode_label"

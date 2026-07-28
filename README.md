@@ -17,7 +17,7 @@ Markdown →（Markdig）→ 內嵌樣式的獨立 HTML →（系統 Chrome / Ed
 
 ## 安裝
 
-建置需要 .NET 10 SDK；**建置完成後的執行檔不需要 .NET**（見下）。
+建置需要 .NET 10 SDK。
 
 ```bash
 git clone https://github.com/jeff377/md2pdf.git && cd md2pdf && ./publish.sh
@@ -30,13 +30,15 @@ git clone https://github.com/jeff377/md2pdf.git && cd md2pdf && ./publish.sh
 chmod +x publish/osx-arm64/md2pdf && mv publish/osx-arm64/md2pdf /usr/local/bin/
 ```
 
-預設模式為 **self-contained**（自含 .NET 執行階段、單一檔約 12 MB），
-目標機器**不需**安裝 .NET，但仍需裝有瀏覽器（見上）。
+預設模式為 **framework-dependent**——執行檔**不含 .NET 組件**，單一檔僅約 650 KB，
+但目標機器須裝有 **.NET 10 執行階段**（以及瀏覽器，見上）。
+
+若目標機器不便安裝 .NET，改用自含執行階段的版本（單一檔約 12 MB，已裁剪）：
 
 ```bash
 ./publish.sh                            # 預設三個 RID
 ./publish.sh osx-arm64                  # 只發佈指定 RID（可給多個）
-./publish.sh --framework-dependent      # 改發佈精簡版（約 650 KB，目標機需裝 .NET 10 執行階段）
+./publish.sh --self-contained           # 自含 .NET 執行階段，目標機不需裝 .NET
 ```
 
 ---
@@ -92,7 +94,7 @@ md2pdf 變更紀錄.md --landscape                     # 寬表格用橫向紙�
 ## 已知限制
 
 - **目標機器需安裝瀏覽器**：PDF 由系統上的 Chrome / Edge / Chromium / Brave 以無頭模式列印。
-  這是刻意的取捨——不自帶瀏覽器核心才能讓產物維持在十幾 MB。
+  這是刻意的取捨——不自帶瀏覽器核心，產物才能小到幾百 KB。
   只用 `--to html` 時則完全不需要瀏覽器。
 - **不做頁碼**：Chrome 命令列只能「全開」或「全關」預設的頁首頁尾，全開會連檔案 URL、
   系統日期一起印在紙上。兩者相權，v1 選擇全關，因此輸出的 PDF **沒有頁碼**。
