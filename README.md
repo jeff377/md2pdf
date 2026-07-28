@@ -17,29 +17,52 @@ Markdown →（Markdig）→ 內嵌樣式的獨立 HTML →（系統 Chrome / Ed
 
 ## 安裝
 
-建置需要 .NET 10 SDK。
+### 下載發佈版
+
+到 [Releases](https://github.com/jeff377/md2pdf/releases) 取回對應平台的壓縮檔，
+支援 `osx-arm64`、`osx-x64`、`win-x64`、`linux-x64`：
+
+```bash
+tar -xzf md2pdf-<版本>-<平台>.tar.gz
+chmod +x md2pdf && mv md2pdf /usr/local/bin/
+```
+
+每個平台各有兩種：
+
+| 檔名 | 目標機器需求 | 大小 |
+|------|------------|------|
+| `md2pdf-<版本>-<平台>` | **只需瀏覽器** | 約 12 MB |
+| `md2pdf-<版本>-<平台>-slim` | 瀏覽器 **＋ .NET 10 執行階段** | 約 650 KB |
+
+不確定就選**沒有 `-slim`** 的版本，兩者功能完全相同。
+
+> **macOS 使用者**：本專案未經 Apple 簽章與公證，從瀏覽器下載的檔案會被標記隔離，
+> 執行時出現「無法驗證開發者」。請先解除隔離標記：
+> ```bash
+> xattr -d com.apple.quarantine /usr/local/bin/md2pdf
+> ```
+
+### 自行建置
+
+建置需要 .NET 10 SDK：
 
 ```bash
 git clone https://github.com/jeff377/md2pdf.git && cd md2pdf && ./publish.sh
 ```
 
-`publish.sh` 預設產出 `osx-arm64`、`win-x64`、`linux-x64` 三個單一執行檔至 `publish/<rid>/`，
-把對應平台的檔案放進 `PATH` 即可使用：
-
-```bash
-chmod +x publish/osx-arm64/md2pdf && mv publish/osx-arm64/md2pdf /usr/local/bin/
-```
-
+`publish.sh` 預設產出四個平台的單一執行檔至 `publish/<rid>/`。
 預設模式為 **framework-dependent**——執行檔**不含 .NET 組件**，單一檔僅約 650 KB，
-但目標機器須裝有 **.NET 10 執行階段**（以及瀏覽器，見上）。
-
-若目標機器不便安裝 .NET，改用自含執行階段的版本（單一檔約 12 MB，已裁剪）：
+但目標機器須裝有 .NET 10 執行階段。
 
 ```bash
-./publish.sh                            # 預設三個 RID
+./publish.sh                            # 預設四個 RID
 ./publish.sh osx-arm64                  # 只發佈指定 RID（可給多個）
 ./publish.sh --self-contained           # 自含 .NET 執行階段，目標機不需裝 .NET
+./publish.sh --version 0.2.0 --archive  # 帶入版號並打包（Release 流程用的形式）
 ```
+
+推送 `v*` 格式的 tag 會觸發 [release.yml](.github/workflows/release.yml)，
+自動建置八個資產與 `SHA256SUMS.txt` 並建立 GitHub Release。
 
 ---
 

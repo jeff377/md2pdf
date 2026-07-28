@@ -1,0 +1,74 @@
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # NOTE: 必須在 macOS 上建置。跨平台產出的 osx-arm64 執行檔沒有 ad-hoc 簽章，
+    # macOS 會直接拒絕執行；.NET SDK 只在 macOS 主機上會補上該簽章。
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Resolve version from tag
+        id: version
+        run: echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Test
+        run: dotnet test --configuration Release
+
+      - name: Publish (framework-dependent)
+        run: ./publish.sh --version "${{ steps.version.outputs.value }}" --archive
+
+      - name: Publish (self-contained)
+        run: ./publish.sh --self-contained --version "${{ steps.version.outputs.value }}" --archive
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          cat > notes.md <<'EOF'
+          ## 下載哪一個？
+
+          | 檔名 | 目標機器需求 | 大小 |
+          |------|------------|------|
+          | `md2pdf-<版本>-<平台>.tar.gz` / `.zip` | **只需瀏覽器**（Chrome / Edge / Chromium / Brave） | 約 12 MB |
+          | `md2pdf-<版本>-<平台>-slim.tar.gz` / `.zip` | 瀏覽器 **＋ .NET 10 執行階段** | 約 650 KB |
+
+          不確定就選**沒有 `-slim`** 的版本。兩者功能完全相同。
+
+          PDF 由目標機器上已安裝的瀏覽器以無頭模式列印，本工具不自帶瀏覽器核心。
+
+          ## 安裝
+
+          ```bash
+          tar -xzf md2pdf-<版本>-<平台>.tar.gz
+          chmod +x md2pdf && mv md2pdf /usr/local/bin/
+          ```
+
+          **macOS 使用者**：從瀏覽器下載的檔案會被標記隔離，執行時會出現「無法驗證開發者」。
+          本專案未經 Apple 簽章與公證，請先解除隔離標記：
+
+          ```bash
+          xattr -d com.apple.quarantine /usr/local/bin/md2pdf
+          ```
+
+          下載完整性可用附帶的 `SHA256SUMS.txt` 核對。
+          EOF
+
+          gh release create "$GITHUB_REF_NAME" \
+            --title "md2pdf $VERSION" \
+            --notes-file notes.md \
+            publish/*.tar.gz publish/*.zip publish/SHA256SUMS.txt
